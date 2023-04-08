@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request, Response
 from flask_cors import cross_origin
 
+from src.modules.users.model.token_data import UserTokenData
 from src.modules.videos.controller.s3_controller import S3Controller, S3Exception
+from src.utils.tokenized import tokenized
 
 video_view = Blueprint('videos', __name__, url_prefix="/videos")
 
@@ -16,6 +18,7 @@ video_view = Blueprint('videos', __name__, url_prefix="/videos")
 
 @video_view.route('/upload', methods=["POST"])
 @cross_origin(supports_credentials=True)
+@tokenized
 def upload():
     # Get the uploaded file data from the request object
     file = request.files['video']
@@ -29,6 +32,7 @@ def upload():
 
 
 # proxy for videos and images
+# unauthorized!!!
 @video_view.route('/s3')
 @cross_origin(supports_credentials=True)
 def s3proxy():
@@ -46,6 +50,7 @@ def s3proxy():
 
 # recommendation system would be implemented here
 @video_view.route('/get')
-def load_all():
+@tokenized
+def load_all(data: UserTokenData):
     # register view logic
     return jsonify({'message': 'videos'})

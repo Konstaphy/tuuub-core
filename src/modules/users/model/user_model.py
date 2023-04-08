@@ -1,6 +1,6 @@
 from peewee import IntegerField, CharField, Model, UUIDField
 
-from src.database.db import db
+from src.db import db
 
 
 class User(Model):
