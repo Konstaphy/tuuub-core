@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify
-
 user_bp = Blueprint('users', __name__)
 
 
