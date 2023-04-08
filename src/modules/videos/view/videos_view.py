@@ -28,6 +28,7 @@ def upload():
     return 'File uploaded successfully!', 200
 
 
+# proxy for videos and images
 @video_view.route('/s3')
 @cross_origin(supports_credentials=True)
 def s3proxy():
@@ -40,7 +41,7 @@ def s3proxy():
         return 'Failed to get file', 500
 
     # return the file
-    return Response(file, mimetype='image/jpeg')
+    return Response(file, mimetype='video/mp4')
 
 
 # recommendation system would be implemented here
