@@ -1,10 +1,15 @@
 from flask import Flask
 
-from src.views.users.users import users_view
 from src.database.db import db
 from flask_cors import CORS
+from dotenv import load_dotenv
 
-from src.views.video.video import video_view
+from src.modules.users.view.users import users_view
+from src.modules.videos.view.video import video_view
+
+# set environment variables from .env
+load_dotenv()
+
 
 if __name__ == "__main__":
     app = Flask(__name__)
