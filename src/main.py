@@ -1,23 +1,25 @@
 from flask import Flask
 
-from src.db import db
 from flask_cors import CORS
 from dotenv import load_dotenv
 
+from src.db import db
+from src.modules.users.model.user_model import User
 from src.modules.users.view.users_view import users_view
+from src.modules.videos.model.video_model import Video
 from src.modules.videos.view.videos_view import video_view
 
 # set environment variables from .env
 load_dotenv()
 
+app = Flask(__name__)
 
 if __name__ == "__main__":
-    # initializing db cursor
-    db = db.cursor()
+    db.connect()
+    User.create_table()
+    Video.create_table()
     # initializing app
-    app = Flask(__name__)
     CORS(app, supports_credentials=True)
-
     # register blueprints
     app.register_blueprint(users_view)
     app.register_blueprint(video_view)
