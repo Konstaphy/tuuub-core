@@ -10,6 +10,10 @@ from src.modules.videos.controller.s3_controller import S3Controller
 
 users_view = Blueprint('users', __name__, url_prefix="/users")
 
+###
+# todo: make try excepts
+###
+
 
 @users_view.route('/sign-in', methods=["POST"])
 @cross_origin(supports_credentials=True)
@@ -21,7 +25,7 @@ def login(body: SignInRequest):
     s3c = S3Controller()
     try:
         user_id = UserController(s3c).login(body.username, body.password)
-    except Exception as e:
+    except Exception:
         return "Unauthorized", 403
 
     if user_id is None:
