@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 
 from src.db import db
 from src.modules.users.model.user_model import User
-from src.modules.users.view.users_view import users_view
+from src.modules.users.controller.users_controller import users_view
 from src.modules.videos.model.video_model import Video
-from src.modules.videos.view.videos_view import video_view
+from src.modules.videos.controller.videos_controller import video_view
 
 # set environment variables from .env
 load_dotenv()

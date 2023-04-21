@@ -2,8 +2,8 @@ from uuid import uuid4
 
 from src.db import db
 from src.modules.users.model.user_model import User
-from src.modules.users.view.request import SignUpRequest
-from src.modules.videos.controller.s3_controller import S3Controller
+from src.modules.users.model.request import SignUpRequest
+from src.modules.videos.service.s3_service import S3Controller
 
 
 class UserController:
@@ -16,7 +16,7 @@ class UserController:
         user = User.get(User.username == username)
         if user and user.password == password:
             return user.id
-        # register view logic
+        # register service logic
         raise ValueError("Invalid username or password")
 
     def sign_up(self, body: SignUpRequest) -> str:

@@ -2,11 +2,11 @@ from flask import Blueprint, jsonify
 from flask_cors import cross_origin
 from flask_pydantic import validate
 
-from src.modules.users.controller.token_controller import TokenController
-from src.modules.users.controller.user_controller import UserController
+from src.modules.users.service.token_service import TokenController
+from src.modules.users.service.user_service import UserController
 from src.modules.users.model.token_data import UserTokenData
-from src.modules.users.view.request import SignUpRequest, SignInRequest
-from src.modules.videos.controller.s3_controller import S3Controller
+from src.modules.users.model.request import SignUpRequest, SignInRequest
+from src.modules.videos.service.s3_service import S3Controller
 
 users_view = Blueprint('users', __name__, url_prefix="/users")
 
@@ -49,5 +49,5 @@ def register(body: SignUpRequest):
     token_controller = TokenController()
     token = token_controller.generate_new(UserTokenData(user_id=str(user_id), username=body.username))
     # [username, password] = request.authorization
-    # register view logic
+    # register service logic
     return jsonify({'token': token, 'user_id': str(user_id)})

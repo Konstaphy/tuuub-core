@@ -2,8 +2,8 @@ from flask import Blueprint, jsonify, request, Response
 from flask_cors import cross_origin
 
 from src.modules.users.model.token_data import UserTokenData
-from src.modules.videos.controller.s3_controller import S3Controller, S3Exception
-from src.utils.tokenized import tokenized
+from src.modules.videos.service.s3_service import S3Controller, S3Exception
+from src.utils.tokenized_decorator import tokenized
 
 video_view = Blueprint('videos', __name__, url_prefix="/videos")
 
@@ -52,5 +52,5 @@ def s3proxy():
 @video_view.route('/get')
 @tokenized
 def load_all(data: UserTokenData):
-    # register view logic
+    # register service logic
     return jsonify({'message': 'videos'})
