@@ -3,11 +3,11 @@ from uuid import uuid4
 from src.db import db
 from src.modules.users.model.user_model import User
 from src.modules.users.model.request import SignUpRequest
-from src.modules.videos.service.s3_service import S3Controller
+from src.modules.videos.service.s3_service import S3Service
 
 
 class UserController:
-    def __init__(self, s3_controller: S3Controller):
+    def __init__(self, s3_controller: S3Service):
         self.db = db
         # taking s3 for avatar uploading
         self.s3controller = s3_controller

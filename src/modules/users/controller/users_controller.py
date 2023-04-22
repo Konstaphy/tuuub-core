@@ -6,23 +6,23 @@ from src.modules.users.service.token_service import TokenController
 from src.modules.users.service.user_service import UserController
 from src.modules.users.model.token_data import UserTokenData
 from src.modules.users.model.request import SignUpRequest, SignInRequest
-from src.modules.videos.service.s3_service import S3Controller
+from src.modules.videos.service.s3_service import S3Service
 
-users_view = Blueprint('users', __name__, url_prefix="/users")
+users_controller = Blueprint('users', __name__, url_prefix="/users")
 
 ###
 # todo: make try excepts
 ###
 
 
-@users_view.route('/sign-in', methods=["POST"])
+@users_controller.route('/sign-in', methods=["POST"])
 @cross_origin(supports_credentials=True)
 @validate()
 def login(body: SignInRequest):
     if body.username is None or body.password is None:
         return "Unauthorized", 403
 
-    s3c = S3Controller()
+    s3c = S3Service()
     try:
         user_id = UserController(s3c).login(body.username, body.password)
     except Exception:
@@ -37,12 +37,12 @@ def login(body: SignInRequest):
     return jsonify({'token': token, 'user_id': str(user_id)})
 
 
-@users_view.route('/sign-up', methods=["POST"])
+@users_controller.route('/sign-up', methods=["POST"])
 @cross_origin(supports_credentials=True)
 @validate()
 def register(body: SignUpRequest):
     # initializing dependencies
-    s3c = S3Controller()
+    s3c = S3Service()
     # making new user
     user_id = UserController(s3c).sign_up(body)
 

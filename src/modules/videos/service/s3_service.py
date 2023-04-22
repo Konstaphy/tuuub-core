@@ -10,7 +10,7 @@ class S3Exception(Exception):
     pass
 
 
-class S3Controller:
+class S3Service:
     s3client: BaseClient = None
     _bucket: str = "tuuub"
 
