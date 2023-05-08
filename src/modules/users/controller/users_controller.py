@@ -63,8 +63,8 @@ def register(body: SignUpRequest):
     token_controller = TokenController()
     try:
         token = token_controller.generate_new(UserTokenData(id=str(user_id), username=body.username))
-    except Exception as e:
-        return e, 500
+    except AuthorizationError as e:
+        return e.message, 500
 
     # register service logic
     return jsonify({'token': token, 'user_id': str(user_id)})
