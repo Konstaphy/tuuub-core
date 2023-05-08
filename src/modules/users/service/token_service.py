@@ -1,17 +1,20 @@
 import os
+from datetime import datetime, timedelta
+
 import jwt
 
 from src.modules.users.model.token_data import UserTokenData
 from src.shared.exceptions.authorization_exception import AuthorizationError
 
 
-class TokenController:
+class TokenService:
     def generate_new(self, payload: UserTokenData):
         try:
             return jwt.encode(
                 {
                     "id": payload.id,
-                    "username": payload.username
+                    "username": payload.username,
+                    "exp": datetime.utcnow() + timedelta(days=3),
                 },
                 os.environ.get("JWT_SECRET"),
                 algorithm="HS256")
