@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 from flask_pydantic import validate
 
 from src.modules.users.service.token_service import TokenController
-from src.modules.users.service.user_service import UserController
+from src.modules.users.service.user_service import UserService
 from src.modules.users.model.token_data import UserTokenData
 from src.modules.users.model.request import SignUpRequest, SignInRequest
 from src.modules.videos.service.s3_service import S3Service
@@ -24,8 +24,8 @@ def login(body: SignInRequest):
 
     s3c = S3Service()
     try:
-        user_id = UserController(s3c).login(body.username, body.password)
-    except Exception:
+        user_id = UserService(s3c).login(body.username, body.password)
+    except Exception as e:
         return "Unauthorized", 403
 
     if user_id is None:
@@ -44,7 +44,7 @@ def register(body: SignUpRequest):
     # initializing dependencies
     s3c = S3Service()
     # making new user
-    user_id = UserController(s3c).sign_up(body)
+    user_id = UserService(s3c).sign_up(body)
 
     token_controller = TokenController()
     token = token_controller.generate_new(UserTokenData(user_id=str(user_id), username=body.username))

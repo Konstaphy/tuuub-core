@@ -6,11 +6,11 @@ from src.modules.users.model.request import SignUpRequest
 from src.modules.videos.service.s3_service import S3Service
 
 
-class UserController:
-    def __init__(self, s3_controller: S3Service):
+class UserService:
+    def __init__(self, s3_service: S3Service):
         self.db = db
         # taking s3 for avatar uploading
-        self.s3controller = s3_controller
+        self.s3service = s3_service
 
     def login(self, username: str, password: str) -> str:
         user = User.get(User.username == username)

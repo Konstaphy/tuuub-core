@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8080
 
 # Start the WSGI server
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+CMD ["waitress-serve", "--call", "wsgi:flask_app"]
