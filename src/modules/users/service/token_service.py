@@ -6,13 +6,16 @@ from src.modules.users.model.token_data import UserTokenData
 
 class TokenController:
     def generate_new(self, payload: UserTokenData):
-        return jwt.encode(
-            {
-                "id": payload.id,
-                "username": payload.username
-            },
-            os.environ.get("JWT_SECRET"),
-            algorithm="HS256")
+        try:
+            return jwt.encode(
+                {
+                    "id": payload.id,
+                    "username": payload.username
+                },
+                os.environ.get("JWT_SECRET"),
+                algorithm="HS256")
+        except Exception:
+            raise ValueError("Unauthorized")
 
     def validate(self, token: str) -> UserTokenData:
         try:
