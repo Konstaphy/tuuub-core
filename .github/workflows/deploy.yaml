@@ -37,5 +37,5 @@ jobs:
         script: |
           sudo docker stop tuuub-core
           sudo docker rm -f tuuub-core
-          sudo docker pull konstaphy/kotovskaya-core
+          sudo docker pull konstaphy/tuuub-core
           sudo docker run --name tuuub-core -p 8080:8080 -d konstaphy/tuuub-core
