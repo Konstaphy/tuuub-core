@@ -29,8 +29,11 @@ class S3Service:
     # uploading video to s3 with name depended on current time
     def upload_video(self, file: FileStorage):
         try:
+            title = "videos/" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + file.filename
+            title = title.replace(" ", "")
             self.s3client.upload_fileobj(file,
                                          self._bucket,
-                                         "videos/" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + file.filename)
+                                         title)
+            return title
         except BaseException:
             raise S3Exception("Failed to upload video")

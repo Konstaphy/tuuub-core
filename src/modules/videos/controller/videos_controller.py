@@ -34,12 +34,12 @@ def upload(token_data: UserTokenData):
         return "File not found by key 'video'", 500
     # Upload the file to S3
     try:
-        S3Service().upload_video(file)
+        filename = S3Service().upload_video(file)
     except S3Exception:
         return 'Failed to upload video', 500
 
     Video.create(id=uuid.uuid4(),
-                 file_path=file.filename,
+                 file_path=filename,
                  title="123",
                  description="",
                  user_id=token_data.id).save()
@@ -79,6 +79,7 @@ def get_video_reactions(token_data: UserTokenData, body: GetVideoReactions):
 # recommendation system would be implemented here
 @video_controller.route('/get')
 @tokenized()
-def load_all(data: UserTokenData):
+def load_all(token_data: UserTokenData):
     # register service logic
-    return jsonify({'message': 'videos'})
+    videos = [v for v in Video.select().dicts()]
+    return jsonify({'videos': videos})
