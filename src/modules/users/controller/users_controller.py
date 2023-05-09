@@ -12,10 +12,6 @@ from src.shared.utils.auth.tokenized_decorator import tokenized
 
 users_controller = Blueprint('users', __name__, url_prefix="/users")
 
-###
-# todo: make try excepts
-###
-
 
 @users_controller.route('/sign-in', methods=["POST"])
 @cross_origin(supports_credentials=True)
@@ -36,8 +32,8 @@ def login(body: SignInRequest):
     token_controller = TokenService()
     try:
         token = token_controller.generate_new(UserTokenData(id=str(user_id), username=body.username))
-    except Exception as e:
-        return "Failed to generate token", 500
+    except AuthorizationError as e:
+        return "Failed to generate token", e.message, 500
 
     return jsonify({'token': token, 'user_id': str(user_id)})
 
@@ -78,4 +74,3 @@ def refresh(token_data: UserTokenData):
     token_service = TokenService()
     new_token = token_service.generate_new(token_data)
     return jsonify({'token': new_token, "username": token_data.username, "user_id": token_data.id})
-

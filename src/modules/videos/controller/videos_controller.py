@@ -26,7 +26,7 @@ video_controller = Blueprint('videos', __name__, url_prefix="/videos")
 @video_controller.route('/upload', methods=["POST"])
 @cross_origin(supports_credentials=True)
 @tokenized()
-def upload(data: UserTokenData):
+def upload(token_data: UserTokenData):
     # Get the uploaded file data from the request object
     try:
         file = request.files['video']
@@ -42,7 +42,7 @@ def upload(data: UserTokenData):
                  file_path=file.filename,
                  title="123",
                  description="",
-                 user_id=data.id).save()
+                 user_id=token_data.id).save()
 
     return 'File uploaded successfully!', 200
 
