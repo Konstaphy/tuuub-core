@@ -10,6 +10,7 @@ class Video(Model):
     title = CharField()
     description = CharField()
     file_path = CharField()
+    photo_path = CharField()
     user_id = ForeignKeyField(User, backref='videos')
 
     class Meta:

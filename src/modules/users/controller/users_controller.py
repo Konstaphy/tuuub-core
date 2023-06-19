@@ -1,76 +1,30 @@
-from flask import Blueprint, jsonify
-from flask_cors import cross_origin
-from flask_pydantic import validate
+import os
 
-from src.modules.users.service.token_service import TokenService
-from src.modules.users.service.user_service import UserService
-from src.modules.users.model.token_data import UserTokenData
-from src.modules.users.model.request import SignUpRequest, SignInRequest
-from src.modules.videos.service.s3_service import S3Service
-from src.shared.exceptions.authorization_exception import AuthorizationError
-from src.shared.utils.auth.tokenized_decorator import tokenized
+import requests
+from flask import Blueprint
+from flask_cors import cross_origin
+
+from src.modules.users.model.user_model import User
 
 users_controller = Blueprint('users', __name__, url_prefix="/users")
 
 
-@users_controller.route('/sign-in', methods=["POST"])
+@users_controller.route("/token/<code>", methods=["GET"])
 @cross_origin(supports_credentials=True)
-@validate()
-def login(body: SignInRequest):
-    if body.username is None or body.password is None:
-        return "Unauthorized", 403
-
-    s3c = S3Service()
-    try:
-        user_id = UserService(s3c).login(body.username, body.password)
-    except AuthorizationError as e:
-        return e.message, 403
-
-    if user_id is None:
-        return "Unauthorized", 403
-
-    token_controller = TokenService()
-    try:
-        token = token_controller.generate_new(UserTokenData(id=str(user_id), username=body.username))
-    except AuthorizationError as e:
-        return "Failed to generate token", e.message, 500
-
-    return jsonify({'token': token, 'user_id': str(user_id)})
+def get_token_by_code(code: str):
+    data = requests.post("https://oauth.yandex.ru/token", f"grant_type=authorization_code"
+                                                          f"&code={code}"
+                                                          f"&client_id={os.getenv('YA_ID')}"
+                                                          f"&client_secret={os.getenv('YA_SECRET')}")
+    return data.json()
 
 
-@users_controller.route('/sign-up', methods=["POST"])
+@users_controller.route("/user/<token>", methods=["GET"])
 @cross_origin(supports_credentials=True)
-@validate()
-def register(body: SignUpRequest):
-    # initializing dependencies
-    s3c = S3Service()
-    # making new user
-    user_service = UserService(s3c)
-
-    try:
-        user_service.check_for_existence(body.username, body.email)
-    except AuthorizationError as e:
-        return e.message, 409
-
-    try:
-        user_id = user_service.sign_up(body)
-    except AuthorizationError as e:
-        return e.message, 500
-
-    token_service = TokenService()
-    try:
-        token = token_service.generate_new(UserTokenData(id=str(user_id), username=body.username))
-    except AuthorizationError as e:
-        return e.message, 500
-
-    # register service logic
-    return jsonify({'token': token, 'user_id': str(user_id)})
-
-
-@users_controller.route('/refresh', methods=["GET"])
-@cross_origin(supports_credentials=True)
-@tokenized()
-def refresh(token_data: UserTokenData):
-    token_service = TokenService()
-    new_token = token_service.generate_new(token_data)
-    return jsonify({'token': new_token, "username": token_data.username, "user_id": token_data.id})
+def get_user_by_token(token: str):
+    data = requests.get("https://login.yandex.ru/info?format=json", headers={"Authorization": f"OAuth {token}"})
+    user_data = data.json()
+    user_id = user_data.get("id")
+    if not User.select().where(User.id == user_id).exists():
+        User.create(id=user_id)
+    return data.json()
