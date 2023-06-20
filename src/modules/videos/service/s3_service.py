@@ -12,10 +12,12 @@ class S3Exception(Exception):
 
 class S3Service:
     s3client: BaseClient = None
-    _bucket: str = "tuuub"
+    _bucket: str = "tuub"
 
     def __init__(self):
-        self.s3client = boto3.client('s3', region_name='eu-north-1',
+        self.s3client = boto3.client(
+                                     service_name='s3',
+                                     endpoint_url='https://storage.yandexcloud.net',
                                      aws_access_key_id=os.environ['S3_AWS_KEY_ID'],
                                      aws_secret_access_key=os.environ['S3_AWS_SECRET_KEY'])
 
@@ -35,5 +37,6 @@ class S3Service:
                                          self._bucket,
                                          title)
             return title
-        except BaseException:
+        except BaseException as e:
+            print(e)
             raise S3Exception("Failed to upload video")
